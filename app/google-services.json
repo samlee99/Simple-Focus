@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "751578987635",
+    "firebase_url": "https://simplepomodoro-bcca6.firebaseio.com",
+    "project_id": "simplepomodoro-bcca6",
+    "storage_bucket": "simplepomodoro-bcca6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:751578987635:android:6a656e063df99bf6",
+        "android_client_info": {
+          "package_name": "com.example.pc.simplepomodoro"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "751578987635-q8cr25fpb036g6beilb4vhs6idhdkid1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDTxSPxH22W0a1SmkMudvZHSApUZRZ0nvI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
