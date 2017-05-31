@@ -3,17 +3,18 @@ package com.example.pc.simplepomodoro;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Timer;
 import java.util.concurrent.TimeUnit;
 
-import alt.android.os.CountDownTimer;
 
 public class TimerService extends Service {
 
@@ -35,9 +36,6 @@ public class TimerService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-
-        Log.i(TAG, "Starting timer...");
-
         mpref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         mEditor = mpref.edit();
 
@@ -47,19 +45,15 @@ public class TimerService extends Service {
         cdt = new CountDownTimer(minutes+2000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
-
-                Log.i(TAG, "Countdown seconds remaining: " + millisUntilFinished / 1000);
                 bi.putExtra("countdown", millisUntilFinished);
                 calendar = Calendar.getInstance();
                 simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
                 strDate = simpleDateFormat.format(calendar.getTime());
-                Log.e("strDate", strDate);
                 twoDatesBetweenTime();
             }
 
             @Override
             public void onFinish() {
-                Log.i(TAG, "Timer finished");
                 stopSelf();
                 cdt.cancel();
             }
@@ -99,7 +93,6 @@ public class TimerService extends Service {
                     str_testing = String.format("%02d:%02d:%02d", diffHours2, diffMinutes2, diffSeconds2);
                 }
 
-                Log.e("TIME", str_testing);
 
                 fn_update(str_testing);
             } else {
@@ -113,7 +106,6 @@ public class TimerService extends Service {
 
     @Override
     public void onDestroy() {
-        Log.i(TAG, "Finished");
         super.onDestroy();
     }
 

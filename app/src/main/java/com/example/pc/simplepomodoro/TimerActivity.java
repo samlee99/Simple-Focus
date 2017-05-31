@@ -7,21 +7,15 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.CountDownTimer;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -30,14 +24,12 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import com.rey.material.widget.CheckBox;
-import com.rey.material.widget.Slider;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import me.relex.circleindicator.CircleIndicator;
 
 /**
@@ -108,7 +100,6 @@ public class TimerActivity extends FragmentActivity {
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("TimerFragment", "pressed play button");
                 calendar = Calendar.getInstance();
                 simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
                 date_time = simpleDateFormat.format(calendar.getTime());
@@ -127,7 +118,6 @@ public class TimerActivity extends FragmentActivity {
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG, "pressed pause button");
                 TimerService.cdt.cancel();
                 stopService(new Intent(TimerActivity.this, TimerService.class));
 
@@ -141,20 +131,7 @@ public class TimerActivity extends FragmentActivity {
         pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         prefEditor = pref.edit();
 
-        try {
-            String value = pref.getString("data", "");
-            if(value.matches("")) {
-                timerTextView.setText("");
-            } else {
-                if (pref.getBoolean("finish", false)) {
-                    timerTextView.setText("");
-                } else {
-                    timerTextView.setText(String.format("%02d:00", minutes));
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        timerTextView.setText(String.format("%02d:00", minutes));
     }
 
     public void show()
