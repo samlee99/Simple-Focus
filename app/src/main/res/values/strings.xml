@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">Simple Pomodoro</string>
+    <string name="app_name">Simple Focus</string>
+    <string name="mute">Mute sound</string>
+    <string name="ok">OK</string>
 </resources>

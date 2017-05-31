@@ -44,7 +44,7 @@ public class TimerService extends Service {
         intent = new Intent(COUNTDOWN_BR);
 
         int minutes = Integer.valueOf(mpref.getString("minutes", "")) * 60 * 1000;
-        cdt = new CountDownTimer(minutes, 1000) {
+        cdt = new CountDownTimer(minutes+2000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
 

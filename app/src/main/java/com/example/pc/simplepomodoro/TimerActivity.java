@@ -1,5 +1,6 @@
 package com.example.pc.simplepomodoro;
 
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -23,9 +24,12 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 
+import com.rey.material.widget.CheckBox;
 import com.rey.material.widget.Slider;
 
 import java.text.SimpleDateFormat;
@@ -51,6 +55,8 @@ public class TimerActivity extends FragmentActivity {
     @BindView(R.id.circularProgress) CircularProgressBar progressBar;
     @BindView(R.id.startButton) ImageButton startButton;
     @BindView(R.id.cancelButton) ImageButton cancelButton;
+    @BindView(R.id.checkbox) CheckBox checkBox;
+    @BindView(R.id.editButton) ImageButton editButton;
     PagerAdapter mPagerAdapter;
 
     String date_time;
@@ -58,7 +64,8 @@ public class TimerActivity extends FragmentActivity {
     SimpleDateFormat simpleDateFormat;
     SharedPreferences pref;
     SharedPreferences.Editor prefEditor;
-    int minutes = 1;
+    int minutes = 25;
+    int paused;
     static MediaPlayer mediaPlayer;
 
 
@@ -73,9 +80,30 @@ public class TimerActivity extends FragmentActivity {
         mPager.setAdapter(mPagerAdapter);
         indicator.setViewPager(mPager);
 
-
         progressBar.showProgressText(false);
-        timerTextView.setText(String.format("%02d:00", minutes));
+
+        mediaPlayer = MediaPlayer.create(this, R.raw.rain);
+        mediaPlayer.setLooping(true);
+
+        editButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                show();
+            }
+        });
+
+        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(compoundButton.isChecked()) {
+                    paused = mediaPlayer.getCurrentPosition();
+                    mediaPlayer.pause();
+                } else {
+                    mediaPlayer.seekTo(paused);
+                    mediaPlayer.start();
+                }
+            }
+        });
 
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,11 +114,13 @@ public class TimerActivity extends FragmentActivity {
                 date_time = simpleDateFormat.format(calendar.getTime());
 
                 prefEditor.putString("data", date_time).commit();
-                prefEditor.putString("minutes", Integer.toString(minutes));
+                prefEditor.putString("minutes", Integer.toString(minutes)).commit();
+                if(!checkBox.isChecked()) mediaPlayer.start();
 
                 startService(new Intent(TimerActivity.this, TimerService.class));
                 startButton.setVisibility(View.GONE);
                 cancelButton.setVisibility(View.VISIBLE);
+                editButton.setVisibility(View.GONE);
             }
         });
 
@@ -98,12 +128,13 @@ public class TimerActivity extends FragmentActivity {
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "pressed pause button");
-                TimerService.cdt.pause();
+                TimerService.cdt.cancel();
                 stopService(new Intent(TimerActivity.this, TimerService.class));
 
                 timerTextView.setText(String.format("%02d:00", minutes));
                 cancelButton.setVisibility(View.GONE);
                 startButton.setVisibility(View.VISIBLE);
+                editButton.setVisibility(View.VISIBLE);
             }
         });
 
@@ -118,12 +149,40 @@ public class TimerActivity extends FragmentActivity {
                 if (pref.getBoolean("finish", false)) {
                     timerTextView.setText("");
                 } else {
-                    timerTextView.setText(value);
+                    timerTextView.setText(String.format("%02d:00", minutes));
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void show()
+    {
+        final Dialog d = new Dialog(this);
+        d.setTitle("NumberPicker");
+        d.setContentView(R.layout.numberpicker_dialog);
+        Button b1 = (Button) d.findViewById(R.id.button1);
+        final NumberPicker np = (NumberPicker) d.findViewById(R.id.numberPicker1);
+        np.setMaxValue(60);
+        np.setMinValue(1);
+        np.setWrapSelectorWheel(false);
+        np.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker numberPicker, int i, int i1) {
+
+            }
+        });
+        b1.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v) {
+                minutes = np.getValue();
+                timerTextView.setText(String.format("%02d:00", minutes));
+                d.dismiss();
+            }
+        });
+        d.show();
     }
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -169,7 +228,6 @@ public class TimerActivity extends FragmentActivity {
             mPager.setCurrentItem(mPager.getCurrentItem() - 1);
         }
     }
-
 
     private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
         public ScreenSlidePagerAdapter(FragmentManager fm) {
